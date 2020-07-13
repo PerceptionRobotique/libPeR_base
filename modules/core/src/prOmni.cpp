@@ -55,14 +55,22 @@ void prOmni::project3DSphere(prPointFeature & P, double & Xs, double & Ys, doubl
     Zs *= inv_norme;
 }
 
-void prOmni::projectImageSphere(prPointFeature & P, double & Xs, double & Ys, double & Zs)
+int prOmni::projectImageSphere(prPointFeature & P, double & Xs, double & Ys, double & Zs)
 {
     double x = P.get_x(), y = P.get_y(), fact;
-    fact = (xi + sqrt(1.0+(1.0-xi*xi)*(x*x + y*y))) / (x*x + y*y + 1.0);
+
+    fact = 1.0+(1.0-xi*xi)*(x*x + y*y);
+    if(fact >= 0.0)
+    {
+      fact = (xi + sqrt(fact)) / (x*x + y*y + 1.0);
     
-    Xs = fact * x;
-    Ys = fact * y;
-    Zs = fact - xi;
+      Xs = fact * x;
+      Ys = fact * y;
+      Zs = fact - xi;
+
+      return 0;
+    }
+    return -1;
 }
 
 prOmni& prOmni::operator=(const prOmni& cam)

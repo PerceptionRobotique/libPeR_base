@@ -94,7 +94,7 @@ public:
      * \param Zs the Cartesian Z coordinate of the projected point on the unit sphere
      * \return Nothing
      */
-    virtual void projectImageSphere(prPointFeature & P, double & Xs, double & Ys, double & Zs);
+    virtual int projectImageSphere(prPointFeature & P, double & Xs, double & Ys, double & Zs);
     
     /*!
      * \fn prOmni& operator=(const prOmni& cam)
