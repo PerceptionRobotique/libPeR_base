@@ -1,0 +1,280 @@
+#############################################################################
+#
+# This file is part of the libPR software.
+# Copyright (C) 2017 by MIS lab (UPJV). All rights reserved.
+#
+# See http://mis.u-picardie.fr/~g-caron/fr/index.php?page=7 for more information.
+#
+# This software was developed at:
+# MIS - UPJV
+# 33 rue Saint-Leu
+# 80039 AMIENS CEDEX
+# France
+#
+# This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+# WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+#
+# Description:
+# CMake package config file for PER. Freely inspired from VISP.
+#
+# ** File generated automatically, do not modify **
+#
+# This file will define the following CMake variables:
+#   - PER_LIBS           : The list of all imported targets for PR modules.
+#   - PER_INCLUDE_DIRS   : PER and third-party include directories
+#   - PER_LIBRARIES      : PER library to link against. Third-party libraries are
+#                           linked automatically thanks to cmake export file PERModules.cmake
+#   - PER_VERSION_STRING : Full PER version that is build, "@PER_VERSION@"
+#   - PER_VERSION_MAJOR  : Major version part of PER_VERSION: "@PER_VERSION_MAJOR@" 
+#   - PER_VERSION_MINOR  : Minor version part of PER_VERSION: "@PER_VERSION_MINOR@"
+#   - PER_VERSION_PATCH  : Patch version part of PER_VERSION: "@PER_VERSION_PATCH@"
+#
+#  Advanced variables:
+#    - PER_SHARED        : Use PER as shared library
+#    - PER_CONFIG_PATH   : Path to this PERConfig.cmake
+#    - PER_USE_FILE      : File to include to use PER without specific cmake code
+#    - PER_LIB_COMPONENTS: Present PER modules list
+#
+# Typical usage in user project:
+#
+#   find_package(PER REQUIRED)
+#   include_directories(${PER_INCLUDE_DIRS})
+#   target_link_libraries(MY_TARGET_NAME ${PER_LIBRARIES})
+#
+# It is also possible to build your project using PER_USE_FILE.
+#
+#   find_package(PER)
+#   if(PER_FOUND)
+#     include(${PER_USE_FILE})
+#   endif()
+#
+# Or you can search for specific OpenCV modules:
+#
+#   find_package(PER REQUIRED core videoio)
+#
+# If the module is found then PER_<MODULE>_FOUND is set to TRUE.
+#
+# Authors:
+# Guillaume Caron
+#
+#############################################################################
+
+
+#if(PER_FOUND)
+#  return()
+#endif()
+
+#set(PER_FOUND TRUE)
+
+# Set the version numbers
+set(PER_VERSION_STRING "@PER_VERSION@")
+set(PER_VERSION_MAJOR  "@PER_VERSION_MAJOR@")
+set(PER_VERSION_MINOR  "@PER_VERSION_MINOR@")
+set(PER_VERSION_PATCH  "@PER_VERSION_PATCH@")
+
+set(PER_LIB_COMPONENTS @PER_MODULES_CONFIGCMAKE@)
+
+# Form list of modules (components) to find
+if(NOT PER_FIND_COMPONENTS)
+  set(PER_FIND_COMPONENTS ${PER_LIB_COMPONENTS})
+endif()
+
+# expand short module names and see if requested components exist
+set(PER_FIND_COMPONENTS_ "")
+foreach(__prcomponent ${PER_FIND_COMPONENTS})
+  if(NOT __prcomponent MATCHES "^per_")
+    set(__prcomponent per_${__prcomponent})
+  endif()
+  list(FIND PER_LIB_COMPONENTS ${__prcomponent} __prcomponentIdx)
+  if(__prcomponentIdx LESS 0)
+    #requested component is not found...
+    if(PER_FIND_REQUIRED)
+      message(FATAL_ERROR "${__prcomponent} is required but was not found")
+    elseif(NOT PER_FIND_QUIETLY)
+      message(WARNING "${__prcomponent} is required but was not found")
+    endif()
+    #indicate that module is NOT found
+    string(TOUPPER "${__prcomponent}" __prcomponentUP)
+    set(${__prcomponentUP}_FOUND "${__prcomponentUP}_FOUND-NOTFOUND")
+  else()
+    list(APPEND PER_FIND_COMPONENTS_ ${__prcomponent})
+    # Not using list(APPEND) here, because PER_LIBS may not exist yet.
+    # Also not clearing PER_LIBS anywhere, so that multiple calls
+    # to find_package(PER) with different component lists add up.
+    set(PER_LIBS ${PER_LIBS} "${__prcomponent}")
+    #indicate that module is found
+    string(TOUPPER "${__prcomponent}" __prcomponentUP)
+    set(${__prcomponentUP}_FOUND 1)
+  endif()
+endforeach()
+set(PER_FIND_COMPONENTS ${PER_FIND_COMPONENTS_})
+#message("PER_FIND_COMPONENTS: ${PER_FIND_COMPONENTS}")
+
+# Resolve dependencies
+foreach(__opttype OPT DBG)
+  set(PER_LIBS_${__opttype} "${PER_LIBS}")
+endforeach()
+
+# Some additional settings are required if PER is built as static libs
+set(PER_SHARED @BUILD_SHARED_LIBS@)
+
+# Extract the directory where *this* file has been installed (determined at cmake run-time)
+set(PER_CONFIG_PATH ${PER_DIR} CACHE PATH "PERConfig.cmake path location" FORCE)
+mark_as_advanced(PER_CONFIG_PATH)
+
+if(NOT WIN32)
+  # Since this file is installed in ./${PER_INSTALL_LIBDIR}/cmake/per
+  # the first "../../" are here to go to ${PER_INSTALL_LIBDIR}, and then
+  # PER_INSTALL_LIBDIR_TO_PARENT goes to the parent dir "."
+  set(PER_INSTALL_PATH "${PER_CONFIG_PATH}/../../@PER_INSTALL_LIBDIR_TO_PARENT@")
+  # Get the absolute path with no ../.. relative marks, to eliminate implicit linker warnings
+  if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_LESS 2.8)
+    get_filename_component(PER_INSTALL_PATH "${PER_INSTALL_PATH}" ABSOLUTE)
+  else()
+    get_filename_component(PER_INSTALL_PATH "${PER_INSTALL_PATH}" REALPATH)
+  endif()
+endif()
+
+# Tells the user project where to find PER headers
+set(PER_INCLUDE_DIRS "@PER_INCLUDE_DIRS_CONFIGCMAKE@")
+
+# Tells the user project PER library name
+set(PER_LIBRARIES ${PER_LIBS})
+
+# need to be improved
+if(POLICY CMP0024)
+  # Fix to prevent multiple includes
+  if(NOT TARGET per_core)
+    cmake_policy(PUSH)
+    cmake_policy(SET CMP0024 OLD)
+    # Our library dependencies (contains definitions for IMPORTED targets)
+    include("${CMAKE_CURRENT_LIST_DIR}/PERModules.cmake")
+    cmake_policy(POP)
+  endif()
+else()
+  # Fix for cmake 2.8.7 to prevent multiple includes
+  if(NOT TARGET per_core)
+    # Our library dependencies (contains definitions for IMPORTED targets)
+    include("${CMAKE_CURRENT_LIST_DIR}/PERModules.cmake")
+  endif()
+endif()
+
+# where to find the USE file to be used by user project
+set(PER_USE_FILE "${CMAKE_CURRENT_LIST_DIR}/PERUse.cmake")
+
+if(BUILD_TEST_COVERAGE)
+  # Add build options for test coverage. Currently coverage is only supported
+  # on gcc compiler 
+  # Because using -fprofile-arcs with shared lib can cause problems like:
+  # hidden symbol `__bb_init_func', we add this option only for static 
+  # library build
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ftest-coverage -fprofile-arcs")
+endif()
+
+#----------------------------------------------------------------------
+# Remember PER' third party libs configuration:
+#----------------------------------------------------------------------
+SET(PER_HAVE_VISP        "@PER_HAVE_VISP@")
+SET(PER_HAVE_PTHREAD        "@PER_HAVE_PTHREAD@")
+SET(PER_HAVE_LIBFREENECT    "@PER_HAVE_LIBFREENECT@")
+SET(PER_HAVE_LIBFREENECT_AND_DEPENDENCIES "@PER_HAVE_LIBFREENECT_AND_DEPENDENCIES@")
+SET(PER_HAVE_LIBFREENECT_OLD "@PER_HAVE_LIBFREENECT_OLD@")
+SET(PER_HAVE_LIBUSB_1       "@PER_HAVE_LIBUSB_1@")
+SET(PER_HAVE_OPENCV         "@PER_HAVE_OPENCV@")
+SET(PER_HAVE_OPENCV_NONFREE "@PER_HAVE_OPENCV_NONFREE@")
+SET(PER_HAVE_OPENCV_VERSION "@PER_HAVE_OPENCV_VERSION@")
+SET(PER_HAVE_OGRE           "@PER_HAVE_OGRE@")
+SET(PER_HAVE_IDS        "@PER_HAVE_IDS@")
+SET(PER_HAVE_TX60       "@PER_HAVE_TX60@")
+SET(PER_HAVE_PIONEER        "@PER_HAVE_PIONEER@")
+SET(PER_HAVE_XML2           "@PER_HAVE_XML2@")
+SET(PER_HAVE_OPENMP         "@PER_HAVE_OPENMP@")
+SET(PER_HAVE_CPP11_COMPATIBILITY "@PER_HAVE_CPP11_COMPATIBILITY@")
+
+#----------------------------------------------------------------------
+# Some useful macro to be able to build the tutorials along side PER
+#----------------------------------------------------------------------
+# Create a target from the *.cpp file, link against PER libraries and add a dependency to PER library
+# tu ensure that the library is build before this target.
+macro(per_add_target file_cpp)
+  get_filename_component(target ${file_cpp} NAME_WE)
+  include_directories(${PER_INCLUDE_DIRS})
+  add_executable(${target} ${file_cpp})
+  target_link_libraries(${target} ${PER_LIBRARIES} per_core)
+endmacro()
+
+# Create a dependency to the target extracted from the *.cpp file and put the target in the solution dependency folder.
+macro(per_add_dependency file_cpp dependency)
+  get_filename_component(target ${file_cpp} NAME_WE)
+  if(TARGET per_${dependency})
+    add_dependencies(per_${dependency} ${target})
+    if(ENABLE_SOLUTION_FOLDERS)
+      set_target_properties(${target} PROPERTIES FOLDER "${dependency}")
+    endif()
+  endif()
+endmacro()
+
+# Copy the data files to the same location than the target associated to the cpp files
+# Since CMake 3.0.0 policy CMP0026 was introduced to disallow location property on target.
+# If CMake 3.0.0 is used, we use $<TARGET_FILE_DIR:tgt> to get the target location
+if (CMAKE_VERSION VERSION_GREATER 2.8.12)
+  macro(per_copy_data file_cpp file_data)
+    get_filename_component(target ${file_cpp} NAME_WE)
+    #get_target_property(target_location ${target} LOCATION)
+    get_filename_component(target_location "${target_location}" PATH)
+    add_custom_command(
+      TARGET ${target}
+      POST_BUILD
+      #COMMAND ${CMAKE_COMMAND} -E copy "${file_data}" "${target_location}"
+      COMMAND ${CMAKE_COMMAND} -E copy "${file_data}" "$<TARGET_FILE_DIR:${target}>"
+    )
+  endmacro()
+else()
+  macro(per_copy_data file_cpp file_data)
+    get_filename_component(target ${file_cpp} NAME_WE)
+    get_target_property(target_location ${target} LOCATION)
+    get_filename_component(target_location "${target_location}" PATH)
+    add_custom_command(
+      TARGET ${target}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy "${file_data}" "${target_location}"
+    )
+  endmacro()
+endif()
+
+# Check dependencies for examples
+macro(per_check_dependencies)
+  set(PR_DEPENDENCIES_FOUND TRUE)
+  foreach(d ${ARGN})
+    if(NOT TARGET ${d})
+      #message(WARNING "PER: Can't resolve dependency: ${d}")
+      set(PR_DEPENDENCIES_FOUND FALSE)
+      break()
+    endif()
+  endforeach()
+endmacro()
+
+# add subdirectory if dependencies are found
+# per_add_subdirectory(<subdir> REQUIRED_DEPS <deps>)
+macro(per_add_subdirectory subdir)
+  set(__deps "")
+
+  foreach(arg ${ARGN})
+    if(arg STREQUAL "REQUIRED_DEPS")
+      set(__varname "__deps")
+    else()
+      list(APPEND ${__varname} ${arg})
+    endif()
+  endforeach()
+  unset(__varname)
+
+  if(__deps STREQUAL "")
+    set(PR_DEPENDENCIES_FOUND TRUE)
+  else()
+    per_check_dependencies(${__deps})
+  endif()
+
+  if(PR_DEPENDENCIES_FOUND)
+    add_subdirectory(${subdir})
+  endif()
+endmacro()
