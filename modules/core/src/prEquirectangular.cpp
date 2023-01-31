@@ -22,8 +22,12 @@ void prEquirectangular::project3DImage(prPointFeature & P)
 {
     double X = P.get_X(), Y = P.get_Y(), Z = P.get_Z();
     
+    /*
     P.set_x(atan2(Y,X)); //Azimuth entre -pi et pi
     P.set_y(atan2(Z, sqrt(X*X + Y*Y))); //Elevation entre -pi/2 et pi/2
+    */
+    P.set_x(atan2(X,Z)); //Azimuth entre -pi et pi
+    P.set_y(atan2(Y, sqrt(X*X + Z*Z))); //Elevation entre -pi/2 et pi/2
 }
 
 void prEquirectangular::project3DSphere(prPointFeature & P, double & Xs, double & Ys, double & Zs)
@@ -48,7 +52,6 @@ void prEquirectangular::projectImageSphere(prPointFeature & P, double & Xs, doub
     Zs = cos(y)*cos(x);
     Xs = cos(y)*sin(x);
     Ys = sin(y);
-    
 }
 
 prEquirectangular& prEquirectangular::operator=(const prEquirectangular& cam)

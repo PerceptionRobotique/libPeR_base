@@ -22,7 +22,7 @@
 #
 #############################################################################
 
-0. install prerequisities libraries: libxml2 (2.8 tested), visp (2.9 tested)
+0. install prerequisities libraries: libxml2 (2.9.10 tested), visp (3.4.1 tested)
 1. create a new directory named build in libPeR
 2. use cmake to fill the build directory
 3. open the project in build or use make in the latter directory to build the lib files

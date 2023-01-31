@@ -42,7 +42,7 @@ pr_clear_vars(PERModules_TARGETS)
 # PER version number.  An even minor number corresponds to releases.
 set(PER_VERSION_MAJOR "0")
 set(PER_VERSION_MINOR "0")
-set(PER_VERSION_PATCH "2")
+set(PER_VERSION_PATCH "3")
 set(PER_VERSION "${PER_VERSION_MAJOR}.${PER_VERSION_MINOR}.${PER_VERSION_PATCH}")
 set(PROJECT_FULL_VERSION ${PER_VERSION})
 # Package revision number
