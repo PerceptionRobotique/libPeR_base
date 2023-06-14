@@ -1,0 +1,28 @@
+                    PER third-party libraries
+
+Below you will find the list of third party libraries used to 
+build PER on your computer.
+
+Mathematics:
+  ViSP Scientific Library     : ${PER_HAVE_VISP_FOUND}
+Robots
+  Pioneer                     : ${PER_HAVE_PIONEER_FOUND}
+  TX60                        : ${PER_HAVE_TX60_FOUND}
+Framegrabbers
+  IDS                         : ${PER_HAVE_IDS_FOUND} 
+Specific devices
+  Kinect                      : ${PER_HAVE_LIBFREENECT_AND_DEPENDENCIES_FOUND}
+  \-libfreenect               : ${PER_HAVE_LIBFREENECT_FOUND}
+  \-libusb-1.0                : ${PER_HAVE_LIBUSB_1_FOUND}
+  \-pthread                   : ${PER_HAVE_PTHREAD_FOUND}
+Data Read/Write:
+  PCL                         : ${PER_HAVE_PCL_FOUND}
+  Ogre3D                      : ${PER_HAVE_OGRE_FOUND}
+Misc:
+  XML2                        : ${PER_HAVE_XML2_FOUND}
+  pthread                     : ${PER_HAVE_PTHREAD_FOUND}
+  OpenMP                      : ${PER_HAVE_OPENMP_FOUND}
+Documentation:
+  Doxygen                     : ${PER_HAVE_DOXYGEN_FOUND}
+PER built with C++11 features: ${PER_HAVE_CPP11_COMPATIBILITY_FOUND}
+
