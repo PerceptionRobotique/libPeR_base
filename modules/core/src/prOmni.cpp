@@ -60,7 +60,7 @@ bool prOmni::projectImageSphere(prPointFeature & P, double & Xs, double & Ys, do
     Ys = fact * y;
     Zs = fact - xi;
 
-    return 0;
+    return true;
 }
 
 prOmni& prOmni::operator=(const prOmni& cam)
