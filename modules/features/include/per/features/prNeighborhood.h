@@ -13,7 +13,7 @@
 
  This class aims to create a unique table that contains all the neighbors of an image once projected on the sphere. To do this, a pointer table ```*****Neigh``` is created.
  */
-class prNeighborhood
+class PER_EXPORT prNeighborhood
 {
 public:
     /*!
