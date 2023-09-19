@@ -27,7 +27,7 @@ project(example-FisheyeEquidistant2OmniCameraModelConversion)
 
 cmake_minimum_required(VERSION 2.6)
 
-find_package(PER REQUIRED per_core per_core_extended per_io)
+find_package(PER REQUIRED per_core per_io)
 
 set(example_cpp
   FisheyeEquidistant2OmniCameraModelConversion.cpp
