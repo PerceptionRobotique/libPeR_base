@@ -1,6 +1,6 @@
 #include <per/prPerspective.h>
 
-prPerspective::prPerspective(double au,double av,double u0,double v0, double k1,double k2,double k3,double k4,double k5):prCameraModel(au,av,u0,v0, k1,k2,k3,k4,k5)
+prPerspective::prPerspective(double au,double av,double u0,double v0, double k1,double k2,double k3,double k4,double k5,double k6,double k7,double k8):prCameraModel(au,av,u0,v0, k1,k2,k3,k4,k5,k6,k7,k8)
 {
     std::cout << "camera perspective created" << std::endl;
     name = "Perspective";

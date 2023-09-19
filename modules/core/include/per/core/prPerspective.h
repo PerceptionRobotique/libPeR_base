@@ -34,8 +34,11 @@ public:
      * \param k3 the sixth order radial distorsion parameter (k_3)
      * \param k4 the first tangential distorsion parameter (k_4)
      * \param k5 the second tangential distorsion parameter (k_5)
+     * \param k6 the second order rational radial distorsion parameter (k_6)
+     * \param k7 the fourth order rational radial distorsion parameter (k_7)
+     * \param k8 the sixth order rational radial distorsion parameter (k_8)
      */
-    prPerspective(double au=0,double av=0,double u0=0,double v0=0, double k1=0,double k2=0,double k3=0,double k4=0,double k5=0);
+    prPerspective(double au=0,double av=0,double u0=0,double v0=0, double k1=0,double k2=0,double k3=0,double k4=0,double k5=0,double k6=0,double k7=0,double k8=0);
     
     /*!
      * \fn ~prPerspective()
