@@ -52,7 +52,6 @@ endif()
 
 per_add_subdirectory(pointPerspectiveProjection REQUIRED_DEPS per_core)
 per_add_subdirectory(saveAndLoadStereocameraModelXML REQUIRED_DEPS per_core per_io)
-per_add_subdirectory(saveAndLoadColoredPointCloud REQUIRED_DEPS per_core per_core_extended per_io per_io_extended)
 per_add_subdirectory(FisheyeEquidistant2OmniCameraModelConversion REQUIRED_DEPS per_core per_io)
 per_add_subdirectory(Omni2PolyCartCameraModelConversion REQUIRED_DEPS per_core per_io)
 per_add_subdirectory(RationalPolynomial2PlumbBoCameraModelConversion REQUIRED_DEPS per_core per_io)
