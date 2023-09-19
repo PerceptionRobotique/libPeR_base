@@ -35,6 +35,8 @@ The `index` file of the documentation is generated in `build/html/index.html`
 
 ### [**VisualGyroscope**](https://github.com/PerceptionRobotique/VisualGyroscope)
 
+### [**VisualServoing**](https://github.com/PerceptionRobotique/VisualServoing)
+
 A series of short programs that highlights how **LibPeR** can be used to perform **Direct Visual Alignment**, using various methods of spherical image mapping.
 
 ### Omnidirectional image utility tools

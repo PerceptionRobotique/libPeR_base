@@ -27,7 +27,8 @@ typedef enum
     Paraboloid, /*!< Adhoc paracatadioptric omnidirectional camera projection */
     Equirectangular, /*!< Equirectangular spherical camera projection */
     Ortho, /*!< Orthographic camera projection */
-    FisheyeEquidistant /*!< Fisheye equidistant camera projection */
+    FisheyeEquidistant, /*!< Fisheye equidistant camera projection */
+    PolyCart /*!< Polynomial Cartesian camera projection */
 } CameraModelType;
 
 
@@ -43,15 +44,17 @@ public:
     std::string name; /*!< Name of the camera model */
     bool distorsions; /*!< Are distorsions set? */
 
-    double k[5]; /*!< Distorsion parameters :     
-                  * k[0-2] : radial distorsions
-                  * k[3-4] : tangential distorsions
+    double k[8]; /*!< Distorsion parameters :     
+                  * k[0-2] : radial distorsions (equivalent to OpenCV 4.8 k1, k2, k3 radial distortion parameters)
+                  * k[3-4] : tangential distorsions (equivalent to OpenCV 4.8 p1, p2 tangential distortion parameters)
+                  * k[5-7] : rational radial distortions (equivalent to OpenCV 4.8 k4, k5, k6 rational radial distortion parameters)
                   */
-    bool activek[5]; /*!< Which distorsion parameter is considered by the camera model? */
+    bool activek[8]; /*!< Which distorsion parameter is considered by the camera model? */
 
-    double ik[5]; /*!< Undistorsion parameters :
+    double ik[8]; /*!< Undistorsion parameters :
                    * k[0-2] : radial undistorsions
                    * k[3-4] : tangential undistorsions
+                   * k[5-7] : rational radial undistortions
                    */
 
     int nbActiveParametersBase; /*!< Number of active intrinsic parameters excluding distorsions */
@@ -70,8 +73,11 @@ public:
      * \param k3 the sixth order radial distorsion parameter (k_3)
      * \param k4 the first tangential distorsion parameter (k_4)
      * \param k5 the second tangential distorsion parameter (k_5)
+     * \param k6 the second order rational radial distorsion parameter (k_6)
+     * \param k7 the fourth order rational radial distorsion parameter (k_7)
+     * \param k8 the sixth order rational radial distorsion parameter (k_8)
      */
-    prCameraModel(double au=0,double av=0,double u0=0,double v0=0, double k1=0,double k2=0,double k3=0,double k4=0,double k5=0);
+    prCameraModel(double au=0,double av=0,double u0=0,double v0=0, double k1=0,double k2=0,double k3=0,double k4=0,double k5=0,double k6=0,double k7=0,double k8=0);
     
     /*!
      * \fn ~prCameraModel()
@@ -92,9 +98,12 @@ public:
      * \param k3 the sixth order radial distorsion parameter (k_3)
      * \param k4 the first tangential distorsion parameter (k_4)
      * \param k5 the second tangential distorsion parameter (k_5)
+     * \param k6 the second order rational radial distorsion parameter (k_6)
+     * \param k7 the fourth order rational radial distorsion parameter (k_7)
+     * \param k8 the sixth order rational radial distorsion parameter (k_8)
      * \return Nothing
      */
-    void init(double au=0,double av=0,double u0=0,double v0=0, double k1=0,double k2=0,double k3=0,double k4=0,double k5=0);
+    void init(double au=0,double av=0,double u0=0,double v0=0, double k1=0,double k2=0,double k3=0,double k4=0,double k5=0,double k6=0,double k7=0,double k8=0);
 
     /*!
      * \fn void init(const prCameraModel& c)
@@ -217,6 +226,27 @@ public:
      * \return k5
      */
     /*inline*/ double getk5() const { return k[4]; }
+
+    /*!
+     * \fn double getk6() const
+     * \brief Accessor to the k6 (k_6) rational radial distorsion parameter of the current sensor model
+     * \return k6
+     */
+    /*inline*/ double getk6() const { return k[5]; }
+    
+    /*!
+     * \fn double getk7() const
+     * \brief Accessor to the k7 (k_7) rational radial distorsion parameter of the current sensor model
+     * \return k7
+     */
+    /*inline*/ double getk7() const { return k[6]; }
+    
+    /*!
+     * \fn double getk8() const
+     * \brief Accessor to the k8 (k_8) rational radial distorsion parameter of the current sensor model
+     * \return k8
+     */
+    /*inline*/ double getk8() const { return k[7]; }
     
     
     /*!
@@ -253,6 +283,27 @@ public:
      * \return ik5
      */
     /*inline*/ double getik5() const { return ik[4]; }
+
+    /*!
+     * \fn double getik6() const
+     * \brief Accessor to the ik6 (k_6') rational radial undistorsion parameter of the current sensor model
+     * \return ik6
+     */
+    /*inline*/ double getik6() const { return ik[5]; }
+    
+    /*!
+     * \fn double getik7() const
+     * \brief Accessor to the ik7 (k_7') rational radial undistorsion parameter of the current sensor model
+     * \return ik7
+     */
+    /*inline*/ double getik7() const { return ik[6]; }
+    
+    /*!
+     * \fn double getik8() const
+     * \brief Accessor to the ik8 (ik_8) rational radial undistorsion parameter of the current sensor model
+     * \return ik8
+     */
+    /*inline*/ double getik8() const { return ik[7]; }
     
     
     /*!
@@ -330,9 +381,12 @@ public:
      * \param k3 the sixth order radial distorsion parameter (k_3)
      * \param k4 the first tangential distorsion parameter (k_4)
      * \param k5 the second tangential distorsion parameter (k_5)
+     * \param k6 the second order rational radial distorsion parameter (k_6)
+     * \param k7 the fourth order rational radial distorsion parameter (k_7)
+     * \param k8 the sixth order rational radial distorsion parameter (k_8)
      * \return Nothing
      */
-    void setDistorsionParameters(double k1=0,double k2=0,double k3=0,double k4=0,double k5=0);
+    void setDistorsionParameters(double k1=0,double k2=0,double k3=0,double k4=0,double k5=0,double k6=0,double k7=0,double k8=0);
     
     /*!
      * \fn void setUndistorsionParameters(double ik1=0,double ik2=0,double ik3=0,double ik4=0,double ik5=0)
@@ -342,9 +396,12 @@ public:
      * \param ik3 the sixth order radial undistorsion parameter (k_3')
      * \param ik4 the first tangential undistorsion parameter (k_4')
      * \param ik5 the second tangential undistorsion parameter (k_5')
+     * \param ik6 the second order rational radial undistorsion parameter (k_6')
+     * \param ik7 the fourth order rational radial undistorsion parameter (k_7')
+     * \param ik8 the sixth order rational radial undistorsion parameter (k_8')
      * \return Nothing
      */
-    void setUndistorsionParameters(double ik1=0,double ik2=0,double ik3=0,double ik4=0,double ik5=0);
+    void setUndistorsionParameters(double ik1=0,double ik2=0,double ik3=0,double ik4=0,double ik5=0,double ik6=0,double ik7=0,double ik8=0);
     
     /*!
      * \fn void setActiveDistorsionParameters(bool k1=true,bool k2=true,bool k3=true,bool k4=true,bool k5=true);
@@ -359,9 +416,15 @@ public:
      *           false: k4 and ik4 are not considered
      * \param k5 true: k5 and ik5 are considered
      *           false: k5 and ik5 are not considered
+     * \param k6 true: k6 and ik6 are considered
+     *           false: k6 and ik6 are not considered
+     * \param k7 true: k7 and ik7 are considered
+     *           false: k7 and ik7 are not considered
+     * \param k8 true: k8 and ik8 are considered
+     *           false: k8 and ik8 are not considered
      * \return Nothing
      */
-    void setActiveDistorsionParameters(bool k1=true,bool k2=true,bool k3=true,bool k4=true,bool k5=true);
+    void setActiveDistorsionParameters(bool k1=true,bool k2=true,bool k3=true,bool k4=true,bool k5=true,bool k6=true,bool k7=true,bool k8=true);
     
     
     /*!
