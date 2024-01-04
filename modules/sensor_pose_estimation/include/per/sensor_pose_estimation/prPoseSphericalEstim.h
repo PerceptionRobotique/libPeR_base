@@ -107,6 +107,21 @@ public:
         if(ficIter.is_open())
             ficIter.close();
     }
+
+    /**
+     * \fn void setIterMax(unsigned int maxIter)
+     * \brief Set the Iter Max 
+     * \param maxIter set max iter 
+     * \return Nothing
+     */
+    inline void setIterMax(unsigned int maxIter){iterMax = maxIter;}
+
+    /**
+     * \fn unsigned int getIterMax()
+     * \brief Get the Iter Max number
+     * \return unsigned int 
+     */
+    unsigned int getIterMax(){return iterMax;}
     
     /*double detect(vpImage<unsigned char> & I, double & tux_optim, double & tuy_optim, double & tuz_optim, double step = M_PI/180.0, double low_range = 0.0, double high_range = 2.0*M_PI, vpImage<unsigned char> *Id_rot = NULL);*/
 
