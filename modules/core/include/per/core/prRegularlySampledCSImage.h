@@ -6,6 +6,10 @@
  \date april 2017
  */
 
+#include <cstdlib>
+#include <per/core/prCartesian3DPointVec.h>
+#include <vector>
+
 #if !defined(_PRREGULARLYSAMPLEDCSIMAGE_H)
 #define _PRREGULARLYSAMPLEDCSIMAGE_H
 
@@ -80,17 +84,18 @@ public:
         prCartesian3DPointVec *pt_XS = (prCartesian3DPointVec *)ge;
         const prCartesian3DPointVec *pt_XS_src = prData::samplesCoordinates[subdivLevels];
         float inorme = 1.0f;
+
         for(unsigned long i = 0 ; i < nbSamples ; i++, pt_XS++, pt_XS_src++)
         {
             //renormalize coordinates (might be necessary due to the text exportation
             inorme = 1.0f/sqrt(pt_XS_src->get_X()*pt_XS_src->get_X() + pt_XS_src->get_Y()*pt_XS_src->get_Y() + pt_XS_src->get_Z()*pt_XS_src->get_Z());
             pt_XS->set(pt_XS_src->get_X()*inorme, pt_XS_src->get_Y()*inorme, pt_XS_src->get_Z()*inorme, pt_XS_src->get_W());
         }
-    
+
         return 0;
     }
-    
-    
+
+        
     /*!
      * \fn int buildFromTwinOmni(vpImage<T> & I, prStereoModel & stereoCam, vpImage<unsigned char> *Mask = NULL)
      * \brief Builds the pixels map of the spherical image from the acquired dual omni image data
@@ -318,8 +323,11 @@ public:
     int buildFromEquiRect(vpImage<T> & I, prEquirectangular & equiCam, vpImage<unsigned char> *Mask = NULL)
     {
         I_req = I;
-        MaskS.resize(Mask->getHeight(), Mask->getWidth());
-        std::memcpy(MaskS.bitmap, Mask->bitmap, Mask->getHeight() * Mask->getWidth() * sizeof(unsigned char));
+
+        if(Mask != nullptr){
+            MaskS.resize(Mask->getHeight(), Mask->getWidth());
+            std::memcpy(MaskS.bitmap, Mask->bitmap, Mask->getHeight() * Mask->getWidth() * sizeof(unsigned char));
+        }
 
         if(nbSamples == 0)
             return -1;
@@ -338,11 +346,11 @@ public:
         T *pt_bitmap = bitmap;
         float *pt_bitmapf = bitmapf;
 
-        prCartesian3DPointVec XSs;
         prCartesian3DPointVec *pt_XS = (prCartesian3DPointVec *)ge;
-        unsigned int icam = 0, imWidth = I.getWidth(), imHeight = I.getHeight(), i, j;
+        unsigned int imWidth = I.getWidth(), imHeight = I.getHeight(), i, j;
         prPointFeature P;
         double u, v, du, dv, unmdu, unmdv;
+
 
         for(unsigned long ns = 0 ; ns < nbSamples ; ns++, pt_XS++, pt_bitmap++)
         {
@@ -401,6 +409,7 @@ public:
                         }
                         
                         *pt_bitmap = *pt_bitmapf;
+                        pt_bitmapf++;
                         
                         break;
                     case IMAGEPLANE_NEARESTNEIGH:
@@ -425,9 +434,7 @@ public:
                         
                         break;
                 }
-            }
-            if(inttyp == IMAGEPLANE_BILINEAR)
-                pt_bitmapf++;
+            }                
         }
         
         return 0;
