@@ -6,6 +6,7 @@
  \date april 2017
  */
 
+#include "per/core/prcommon.h"
 #include <cstdlib>
 #include <per/core/prCartesian3DPointVec.h>
 #include <vector>
@@ -409,7 +410,6 @@ public:
                         }
                         
                         *pt_bitmap = *pt_bitmapf;
-                        pt_bitmapf++;
                         
                         break;
                     case IMAGEPLANE_NEARESTNEIGH:
@@ -434,6 +434,9 @@ public:
                         
                         break;
                 }
+            }
+            if(inttyp == IMAGEPLANE_BILINEAR){
+                pt_bitmapf++;
             }                
         }
         
@@ -498,6 +501,56 @@ public:
             }
         }
         
+        return 0;
+    }
+
+    int toEquiRectF(vpImage<float> &I_r, vpPoseVector &r, prEquirectangular &equiCam, vpImage<unsigned char> *Mask = NULL)
+    {
+        if (nbSamples == 0)
+            return -1;
+
+        T *pt_bitmap = bitmap;
+        float *pt_bitmapf = bitmapf;
+
+        prCartesian3DPointVec XSs;
+        prCartesian3DPointVec *pt_XS = (prCartesian3DPointVec *)ge;
+        unsigned int icam = 0, imWidth = I_r.getWidth(), imHeight = I_r.getHeight(), i, j;
+        prPointFeature P;
+        double u, v, du, dv, unmdu, unmdv;
+
+        vpHomogeneousMatrix dMc;
+        dMc.buildFrom(r);
+        dMc = dMc.inverse(); // a justifier clairement dans la doc
+
+        for (unsigned long ns = 0; ns < nbSamples; ns++, pt_XS++, pt_bitmapf++)
+        {
+            P.sX = *pt_XS;
+            P.sX = P.sX.changeFrame(dMc);
+
+            equiCam.project3DImage(P);
+
+            equiCam.meterPixelConversion(P);
+
+            u = P.get_u();
+            v = P.get_v();
+
+            if ((u >= 0) && (v >= 0) && (u < (imWidth - 1)) && (v < (imHeight - 1)))
+            {
+                i = (unsigned int)v;
+                j = (unsigned int)u;
+
+                if ((Mask != NULL))
+                {
+                    if ((*Mask)[i][j] != 0)
+                        I_r[i][j] = *pt_bitmapf;
+                }
+                else
+                {
+                    I_r[i][j] = *pt_bitmapf;
+                }
+            }
+        }
+
         return 0;
     }
 
