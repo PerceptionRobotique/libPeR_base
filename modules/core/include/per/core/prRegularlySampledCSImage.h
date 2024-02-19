@@ -504,7 +504,7 @@ public:
         return 0;
     }
 
-    int toEquiRectF(vpImage<float> &I_r, vpPoseVector &r, prEquirectangular &equiCam, vpImage<unsigned char> *Mask = NULL)
+    int toEquiRectF(vpImage<T> &I_r, vpPoseVector &r, prEquirectangular &equiCam, vpImage<unsigned char> *Mask = NULL)
     {
         if (nbSamples == 0)
             return -1;
