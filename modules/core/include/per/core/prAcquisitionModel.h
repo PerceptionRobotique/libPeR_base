@@ -64,6 +64,17 @@ public:
     void setInterpType(prInterpType inttyp_)
     {
         inttyp = inttyp_;
+
+        if(inttyp == IMAGEPLANE_BILINEAR)
+        {
+            if(bitmapf != NULL)
+            {
+                delete [] bitmapf;
+                bitmapf = NULL;
+            }
+            bitmapf = new float[nbSamples];
+            isBitmapfSet = true;
+        }
     }
 
     /*!
