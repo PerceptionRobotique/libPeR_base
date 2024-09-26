@@ -75,6 +75,15 @@ public:
     void project3DImage(prPointFeature & P);
     
     /*!
+     * \fn virtual void unProject(prPointFeature & P, double & Depth)=0
+     * \brief Compute the 3D point expressed in the sensor frame from the normalized image plane and the depth (must be implemented in a specified sensor model)
+     * \param P the point to unproject
+     * \param Depth the Depth used to unproject the P (/rho here...)
+     * \return true if unprojection could be done
+     */
+    bool unProject(prPointFeature & P, double & Depth);
+
+    /*!
      * \fn void projectImageMiroir(prPointFeature & P, double & Xm, double & Ym, double & Zm)
      * \brief Inverse projection from the normalized image plane to the paraboloidal mirror
      * \param P the point to backproject
@@ -105,6 +114,15 @@ public:
      * \return the affected prParaboloid.
      */
     prParaboloid& operator=(const prParaboloid & cam);
+
+    /*!
+     * \fn void computeSensorJacobian(prPointFeature & P, vpMatrix & LuX)
+     * \brief computes the Jacobian of the sensor digital image point coordinates with respect to the 3D coordinates in the camera frame
+     * \param P the point for which computing the Jacobian
+     * \param LuX the output Jacobian Matrix
+     * \return Nothing
+     */
+    void computeSensorJacobian(prPointFeature & P, vpMatrix & LuX);
 };
 
 #endif  //_PRPARABOLOID_H

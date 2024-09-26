@@ -72,7 +72,24 @@ public:
         return 0;
     }
     
-    
+    /*!
+     * \fn int reset(unsigned int _height, unsigned int _width)
+     * \brief Free the grid and bitmap and reallocate them with (possibly) new height and width
+     */
+    int reset(unsigned int _height, unsigned int _width)
+    {
+        //clean grid
+        delete [] ge;
+        delete [] bitmap;
+
+        height=_height;
+        width=_width;
+
+        initializeGrid();
+
+        return 0;
+    }
+
     /*!
      * \fn int buildFrom(vpImage<T> & I, prSensorModel *camera = NULL, vpImage<unsigned char> *Mask = NULL)
      * \brief Builds the pixels map of the planar image from the acquired image data

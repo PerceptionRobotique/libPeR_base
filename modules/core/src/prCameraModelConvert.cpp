@@ -83,7 +83,7 @@ double prCameraModelConvert::convertOptBearing(prOmni &ocam, prPolyCart &pccam, 
 }
 */
 
-double prCameraModelConvert::convert(prOmni &ocam, prPolyCart &pccam, double theoreticalFOV)
+double prCameraModelConvert::convert(prOmni &ocam, prPolyCart &pccam, double theoreticalFOV, vpMatrix *abs_err)
 {
 	double residual = 0;
 	unsigned int nblig = vpMath::round(theoreticalFOV)+1; //+1 for zero deg
@@ -139,14 +139,33 @@ double prCameraModelConvert::convert(prOmni &ocam, prPolyCart &pccam, double the
 	
 	pccam.init(alpha, ocam.getu0(), ocam.getv0(), a);
 	
-	//compute residual: later use prCmp?
-	double r_rho_up;
-	for(unsigned int i = 0 ; i < nblig; i++)
+	if(abs_err == NULL)
 	{
-		//TODO: use ocam.project3DImage(...)
-		r_rho_up = params[0] + params[1]*A[i][1]; //+ params[2]*A[i][2] + params[3]*A[i][3];  
-		//residual += pow(Xs[i] - up[i]/alpha, 2) + pow(Zs[i] - r_rho_up/alpha, 2);
-		residual += pow(r_rho_up - b[i], 2); //TODO: find another more geometric
+		//compute residual: later use prCmp?
+		double r_rho_up;
+		for(unsigned int i = 0 ; i < nblig; i++)
+		{
+			//TODO: use ocam.project3DImage(...)
+			r_rho_up = params[0] + params[1]*A[i][1]; //+ params[2]*A[i][2] + params[3]*A[i][3];  
+			//residual += pow(Xs[i] - up[i]/alpha, 2) + pow(Zs[i] - r_rho_up/alpha, 2);
+			residual += pow(r_rho_up - b[i], 2); //TODO: find another more geometric
+		}
+	}
+	else
+	{
+		abs_err->resize(nblig, 2, false);
+		phi = -theoreticalFOV*0.5 * incr_phi;
+		//compute residual: later use prCmp?
+		double r_rho_up;
+		for(unsigned int i = 0 ; i < nblig; i++, phi += incr_phi)
+		{
+			(*abs_err)[i][0] = phi;
+			//TODO: use ocam.project3DImage(...)
+			r_rho_up = params[0] + params[1]*A[i][1]; //+ params[2]*A[i][2] + params[3]*A[i][3];  
+			//residual += pow(Xs[i] - up[i]/alpha, 2) + pow(Zs[i] - r_rho_up/alpha, 2);
+			(*abs_err)[i][1] = fabs(r_rho_up - b[i]);
+			residual += pow((*abs_err)[i][1], 2); //TODO: find another more geometric
+		}
 	}
 	
 	residual =sqrt(residual)/(double)nblig;
@@ -157,7 +176,7 @@ double prCameraModelConvert::convert(prOmni &ocam, prPolyCart &pccam, double the
 
 
 
-double prCameraModelConvert::convert(prFisheyeEquidistant &fecam, prOmni &ocam, double theoreticalFOV)
+double prCameraModelConvert::convert(prFisheyeEquidistant &fecam, prOmni &ocam, double theoreticalFOV, vpMatrix *abs_err)
 {
 	double residual = 0;
 	unsigned int nblig = vpMath::round(theoreticalFOV)+1; //+1 for zero deg
@@ -166,12 +185,12 @@ double prCameraModelConvert::convert(prFisheyeEquidistant &fecam, prOmni &ocam, 
 	double incr_phi = M_PI / 180.; // 1 degree to radian
 	double phi = -theoreticalFOV*0.5 * incr_phi;
 	
-	
 	double fe_au = fecam.getau();
 	
 	vpColVector Zs(nblig);
 	vpColVector Xs(nblig);
 	vpColVector ufe(nblig);
+
 	for(unsigned int i = 0 ; i < nblig; i++, phi += incr_phi)
 	{
 		Zs[i] = cos(phi);
@@ -185,12 +204,28 @@ double prCameraModelConvert::convert(prFisheyeEquidistant &fecam, prOmni &ocam, 
 	vpColVector params = A.pseudoInverse()*b;
 	
 	ocam = prOmni(params[0], params[0], fecam.getu0(), fecam.getv0(), params[1]);
-	
-	//compute residual: later use prCmp?
-	for(unsigned int i = 0 ; i < nblig; i++)
+
+	if(abs_err == NULL)
 	{
-		//TODO: use ocam.project3DImage(...)
-		residual += pow((params[0]*Xs[i]/(Zs[i]+params[1]) - ufe[i]), 2);
+		//compute residual: later use prCmp?
+		for(unsigned int i = 0 ; i < nblig; i++)
+		{
+			//TODO: use ocam.project3DImage(...)
+			residual += pow((params[0]*Xs[i]/(Zs[i]+params[1]) - ufe[i]), 2);
+		}
+	}
+	else
+	{
+		abs_err->resize(nblig, 2, false);
+		phi = -theoreticalFOV*0.5 * incr_phi;
+		//compute residual: later use prCmp?
+		for(unsigned int i = 0 ; i < nblig; i++, phi += incr_phi)
+		{
+			(*abs_err)[i][0] = phi;
+			//TODO: use ocam.project3DImage(...)
+			(*abs_err)[i][1] = fabs(params[0]*Xs[i]/(Zs[i]+params[1]) - ufe[i]);
+			residual += pow((*abs_err)[i][1], 2);
+		}
 	}
 	
 	residual =sqrt(residual)/(double)nblig;
@@ -198,7 +233,7 @@ double prCameraModelConvert::convert(prFisheyeEquidistant &fecam, prOmni &ocam, 
 	return residual;
 }
 
-double prCameraModelConvert::convert_distortions(prCameraModel *incam, prCameraModel *outcam, double theoreticalFOV)
+double prCameraModelConvert::convert_distortions(prCameraModel *incam, prCameraModel *outcam, double theoreticalFOV, vpMatrix *abs_err)
 {
 	double residual = 0;
 	
@@ -207,9 +242,9 @@ double prCameraModelConvert::convert_distortions(prCameraModel *incam, prCameraM
 	
 
 	double incr_phi = M_PI / 180.;//theoreticalFOV * 0.25; // M_PI / 180.; // 1 degree to radian
-	unsigned int nblig = vpMath::round(theoreticalFOV/2)+1; //+1 for zero deg //3;//
-	theoreticalFOV *= M_PI / 180.;
-	double phi = 0.0;
+	unsigned int nblig = vpMath::round(theoreticalFOV)+1; //vpMath::round(theoreticalFOV/2)+1; //+1 for zero deg //3;//
+	//theoreticalFOV *= M_PI / 180.;
+	double phi = -theoreticalFOV*0.5 * incr_phi;//0.0;
 	vpMatrix A(nblig, 3);
 	A = 0;
 	vpColVector b(nblig);
@@ -235,18 +270,44 @@ double prCameraModelConvert::convert_distortions(prCameraModel *incam, prCameraM
 	
 	outcam->setDistorsionParameters(params[0], params[1], params[2], incam->getk4(), incam->getk5(), 0, 0, 0);
 	
-	//compute residual: later use prCmp?
-	for(unsigned int i = 0 ; i < nblig; i++)
+	if(abs_err == NULL)
 	{
-		//TODO: use ocam.project3DImage(...)
-		prPointFeature inp, outp;
-		inp.set_x(xu[i]);
-		inp.set_y(0);
-		incam->meterPixelConversion(inp);
-		outp.set_x(xu[i]);
-		outp.set_y(0);
-		outcam->meterPixelConversion(outp);
-		residual += pow(outp.get_u() - inp.get_u(), 2);
+		//compute residual: later use prCmp?
+		for(unsigned int i = 0 ; i < nblig; i++)
+		{
+			//TODO: use ocam.project3DImage(...)
+			prPointFeature inp, outp;
+			inp.set_x(xu[i]);
+			inp.set_y(0);
+			incam->meterPixelConversion(inp);
+			outp.set_x(xu[i]);
+			outp.set_y(0);
+			outcam->meterPixelConversion(outp);
+			residual += pow(outp.get_u() - inp.get_u(), 2);
+		}
+	}
+	else
+	{
+		abs_err->resize(nblig, 2, false);
+		phi = -theoreticalFOV*0.5 * incr_phi; //0.; //
+
+		//compute residual: later use prCmp?
+		for(unsigned int i = 0 ; i < nblig; i++, phi += incr_phi)
+		{
+			//TODO: use ocam.project3DImage(...)
+			prPointFeature inp, outp;
+			inp.set_x(xu[i]);
+			inp.set_y(0);
+			incam->meterPixelConversion(inp);
+			outp.set_x(xu[i]);
+			outp.set_y(0);
+			outcam->meterPixelConversion(outp);
+
+			(*abs_err)[i][0] = phi;
+			(*abs_err)[i][1] = fabs(outp.get_u() - inp.get_u());
+
+			residual += pow((*abs_err)[i][1], 2);
+		}
 	}
 	
 	residual =sqrt(residual/(double)nblig);

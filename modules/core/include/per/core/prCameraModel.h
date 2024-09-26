@@ -131,12 +131,21 @@ public:
     void pixelMeterConversion(prPointFeature & P);
     
     /*!
-     * \fn virtual void project3DImage(prPoint & P)=0
+     * \fn virtual void project3DImage(prPointFeature & P)=0
      * \brief Project a 3D point expressed in the sensor frame to the normalized image plane (must be implemented in a specified sensor model)
      * \param P the point to project
      * \return Nothing
      */
     virtual void project3DImage(prPointFeature & P)=0;
+
+    /*!
+     * \fn virtual void unProject(prPointFeature & P, double & Depth)=0
+     * \brief Compute the 3D point expressed in the sensor frame from the normalized image plane and the depth (must be implemented in a specified sensor model)
+     * \param P the point to unproject
+     * \param Depth the Depth used to unproject the P (Z in perspective-like model, /rho otherwise...)
+     * \return true if unprojection could be done
+     */
+    virtual bool unProject(prPointFeature & P, double & Depth)=0;
     
     /*!
      * \fn virtual void projectImageSphere(prPointFeature &P, double &Xs, double &Ys, double &Zs) = 0
@@ -444,6 +453,17 @@ public:
      * \return the updated stream.
      */
     virtual std::ostream& operator << (std::ostream & os);
+
+
+    /*!
+     * \fn void computeSensorJacobian(prPointFeature & P, vpMatrix & LuX)
+     * \brief computes the Jacobian of the sensor digital image point coordinates with respect to the 3D coordinates in the camera frame
+     * WATCH OUT : distorsions are not handled
+     * \param P the point for which computing the Jacobian
+     * \param LuX the output Jacobian Matrix
+     * \return Nothing
+     */
+    virtual void computeSensorJacobian(prPointFeature & P, vpMatrix & LuX);
     
 };
 

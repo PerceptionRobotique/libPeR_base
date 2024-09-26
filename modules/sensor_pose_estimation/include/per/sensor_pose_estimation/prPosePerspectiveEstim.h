@@ -26,9 +26,9 @@
 
 //#define VERBOSE
 
-//template<class FSetT, class FSetCmpT>
-template<class Tfeat, class FSetT, class FSetCmpT> //Tfeat useless?
-class PER_EXPORT prPosePerspectiveEstim : public prCameraPoseEstim {
+template<class FSetT, class FSetCmpT>
+//template<class Tfeat, class FSetT, class FSetCmpT> //Tfeat useless?
+class PER_EXPORT prPosePerspectiveEstim : public prCameraPoseEstim<FSetT, FSetCmpT> {
 
 public:
     
@@ -687,7 +687,7 @@ public:
       else
         LsRaw.svdEigen3(w, V);
 
-        return w[0]/w[w.getRows()-1];
+      return w[0]/w[w.getRows()-1];
     }
     
 private:

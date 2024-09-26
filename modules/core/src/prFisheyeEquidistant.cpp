@@ -25,6 +25,12 @@ void prFisheyeEquidistant::project3DImage(prPointFeature & P)
     P.set_y(phi*sin(theta));
 }
 
+bool prFisheyeEquidistant::unProject(prPointFeature & P, double & Depth)
+{
+    //to do
+    return false;
+}
+
 //idem prOmni
 void prFisheyeEquidistant::project3DSphere(prPointFeature & P, double & Xs, double & Ys, double & Zs)
 {
@@ -62,3 +68,8 @@ prFisheyeEquidistant& prFisheyeEquidistant::operator=(const prFisheyeEquidistant
     return *this;
 }
 
+// du / dX
+void prFisheyeEquidistant::computeSensorJacobian(prPointFeature & P, vpMatrix & LuX)
+{
+    //TODO
+}

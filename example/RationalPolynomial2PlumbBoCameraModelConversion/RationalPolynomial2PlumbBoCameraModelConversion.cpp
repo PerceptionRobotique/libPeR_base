@@ -11,6 +11,8 @@
 #include <per/prPerspective.h>
 #include <per/prCameraModelConvert.h>
 
+#include <visp/vpMatrix.h>
+
 /*!
  * \fn main()
  * \brief Main function of the sample program to convert a PeR camera model set of distorsion parameters to another
@@ -34,8 +36,8 @@ int main()
     double k1 = 0.39919957518577576;
     double k2 = -2.5894720554351807;
     double k3 = 1.5280966758728027;
-    double k4 = -1.5258635812642751e-06;
-    double k5 = -0.000308827351545915;
+    double k4 = -1.5258635812642751e-06; // tangential 1
+    double k5 = -0.000308827351545915; // tangential 2
     double k6 = 0.27556535601615906;
     double k7 = -2.4022183418273926;
     double k8 = 1.4482877254486084;
@@ -47,14 +49,14 @@ int main()
     double u0 = 1025.603;
     double v0 = 777.720;
     
-    double k1 = 0.399;
-    double k2 = -2.589;
-    double k3 = 1.528;
-    double k4 = -1.526e-6; // tangential 1
-    double k5 = -3.088e-4; //tangential 2
-    double k6 = 0.276;
-    double k7 = -2.402;
-    double k8 = 1.448;
+    double k1 = 0.39919957518577576;
+    double k2 = -2.5894720554351807;
+    double k3 = 1.5280966758728027;
+    double k4 = -1.5258635812642751e-06; // tangential 1
+    double k5 = -0.000308827351545915; // tangential 2
+    double k6 = 0.27556535601615906;
+    double k7 = -2.4022183418273926;
+    double k8 = 1.4482877254486084;
     
     double FoV = 90; // degrees; horizontal
     
@@ -64,8 +66,17 @@ int main()
     std::cout << "The input camera is a " << inperspcam.getName() << " camera of intrinsic parameters " << std::endl;
     inperspcam.operator<<(std::cout);
     
-    // Conversion of the equidistant fisheye to an omni camera
-    double residual = prCameraModelConvert::convert_distortions(&inperspcam, &outperspcam, FoV);
+    // Conversion of the equidistant fisheye to an omni camera and export the geometric residuals
+    vpMatrix abs_err;
+    double residual = prCameraModelConvert::convert_distortions(&inperspcam, &outperspcam, FoV, &abs_err);
+    vpMatrix::save("residuals.txt", abs_err); 
+    //e.g. to plot the residuals with gnuplot: 
+    //plot 'residuals.txt' using (57.295779513*$1):2 skip 2 with boxes fill solid 0.5 title "algebraic error per ray", [-100:100] 0.1 lc rgb "#00FF00" lw 2 title "0.1 algebraic error"
+    //set key center top reverse Left
+    //set key box
+    //set xlabel "{/Symbol f} elevation angle [deg]"
+    //set ylabel "approximation error [pix]"
+    //replot
     
     std::cout << "The ouput camera is a " << outperspcam.getName() << " camera of intrinsic parameters " << std::endl;
     outperspcam.operator<<(std::cout);

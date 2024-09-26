@@ -62,7 +62,8 @@ public:
 
     /*!
      * \fn int buildFrom(prEquirectangular *equiCam, prRegularlySampledCSImage<unsigned char> & IS_req, Ts & _s_g, bool computePoseDerivatives = false, double rho = 1., unsigned long sourceIndex = 0)
-     * \brief Computes the sample value from the set of a sample (one for each "pixel") from an equirectangular given camera, and, optionally (iff computePoseDerivatives == true), computes the photometric drivatives with respect to the 6 DOFs pose
+     * \brief Computes the sample value from the set of a sample (one for each "pixel") from an equirectangular given camera, and, optionally 
+     *        (iff computePoseDerivatives == true), computes the photometric drivatives with respect to the 6 DOFs pose
      * TODO: take degrees of freedom into account to save processing time
      * TODO: find how to take properly account of the image type, if unsigned char the photometric value is put in the [0,1] interval
      * \param equiCam pointer to the equirectangular camera, used to project the feature on the image plane and likewise in the other direction

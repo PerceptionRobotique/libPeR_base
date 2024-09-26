@@ -67,6 +67,13 @@ void prPolyCart::project3DImage(prPointFeature & P)
    */
 }
 
+bool prPolyCart::unProject(prPointFeature & P, double & Depth)
+{
+    return false;
+    //TODO
+    //return true;
+}
+
 bool prPolyCart::projectImageSphere(prPointFeature & P, double & Xs, double & Ys, double & Zs)
 {
     double up = P.get_u()-u0, vp = P.get_v()-v0;
@@ -94,3 +101,8 @@ prPolyCart& prPolyCart::operator=(const prPolyCart& cam)
     return *this;
 }
 
+// du / dX
+void prPolyCart::computeSensorJacobian(prPointFeature & P, vpMatrix & LuX)
+{
+    //TODO
+}
