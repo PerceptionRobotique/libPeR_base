@@ -12,6 +12,8 @@
 #include <per/prOmni.h>
 #include <per/prCameraModelConvert.h>
 
+#include <visp/vpMatrix.h>
+
 /*!
  * \fn main()
  * \brief Main function of the sample program to convert a PeR camera model to another
@@ -27,7 +29,7 @@ int main()
     prOmni omnicam;
 
     // Equidistant fisheye camera definition
-    /*
+    
     // Example of a C-Mount Fujinon fisheye FE185C086HA-1 lens ...
     double f = 2.7e-3; // focal length 2.7mm (Fujinon specs)
     double FoV = 185; // degrees
@@ -35,7 +37,8 @@ int main()
     double k = 15e-6; // square photodiodes: ku = kv
     double width = 640; // pixels
     double height = 480; // pixels
-    */
+    
+    /*
     // Example of an M-12 Lensagon fisheye BF10M14522S118 lens ...
     double f = 1.45e-3; // focal length 1.45mm (Lensation specs)
     double FoV = 190; // degrees
@@ -43,12 +46,24 @@ int main()
     double k = 2.2e-6; // square photodiodes: ku = kv
     double width = 2592; // pixels
     double height = 1944; // pixels
+    */
+    /*
+    // Example of a C-Mount Fujinon fisheye FE185C086HA-1 lens ...
+    double f = 2.7e-3; // focal length 2.7mm (Fujinon specs)
+    double FoV = 185; // degrees
+    // ...mounted on a Flir FL3-U3-13S2C  camera
+    double k = 5.3e-6; // square photodiodes: ku = kv
+    double width = 1280; // pixels
+    double height = 1024; // pixels
+    */
     
     fisheyeEquidistantcam.init(f/k, f/k, width*0.5, height*0.5);
     std::cout << "The input camera is a " << fisheyeEquidistantcam.getName() << " camera of intrinsic parameters alpha_u = " << fisheyeEquidistantcam.getau() << " ; alpha_v = " << fisheyeEquidistantcam.getav() << " ; u_0 = " << fisheyeEquidistantcam.getu0() << " ; v_0 = " << fisheyeEquidistantcam.getv0() << std::endl;
     
-    // Conversion of the equidistant fisheye to an omni camera
-    double residual = prCameraModelConvert::convert(fisheyeEquidistantcam, omnicam, FoV);
+    // Conversion of the equidistant fisheye to an omni camera and export the geometric residuals
+    vpMatrix abs_err;
+    double residual = prCameraModelConvert::convert(fisheyeEquidistantcam, omnicam, FoV, &abs_err);
+    vpMatrix::save("residuals.txt", abs_err); //e.g. to plot the residuals with gnuplot: plot 'residuals.txt' using (57.295779513*$1):2 skip 2 with boxes notitle
     
     std::cout << "The ouput camera is a " << omnicam.getName() << " camera of intrinsic parameters alpha_u = " << omnicam.getau() << " ; alpha_v = " << omnicam.getav() << " ; u_0 = " << omnicam.getu0() << " ; v_0 = " << omnicam.getv0() << " ; xi = " << omnicam.getXi() << std::endl;
     

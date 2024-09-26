@@ -364,3 +364,14 @@ vpMatrix prCameraModel::getK() const
     
     return K; 
 }
+
+//d u / d x : probably never used alone...
+//BE CAREFUL: distorsions not handled
+void prCameraModel::computeSensorJacobian(prPointFeature & P, vpMatrix & LuX)
+{
+    LuX.resize(2,2,false);
+
+    LuX[0][0] = au;
+    LuX[0][1] = LuX[1][0] = 0.;
+    LuX[1][1] = av;
+}

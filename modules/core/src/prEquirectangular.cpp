@@ -25,6 +25,20 @@ void prEquirectangular::project3DImage(prPointFeature & P)
     P.set_y(atan2(Y, sqrt(X * X + Z * Z))); // Elevation entre -pi/2 et pi/2
 }
 
+bool prEquirectangular::unProject(prPointFeature & P, double & Depth)
+{
+    double Xs, Ys, Zs;
+    
+    if(!projectImageSphere(P, Xs, Ys, Zs))
+        return false;
+
+    P.set_X(Xs*Depth);
+    P.set_Y(Ys*Depth);
+    P.set_Z(Zs*Depth);
+    
+    return true;
+}
+
 void prEquirectangular::project3DSphere(prPointFeature & P, double & Xs, double & Ys, double & Zs)
 {
     double inv_norme;
@@ -56,4 +70,32 @@ prEquirectangular& prEquirectangular::operator=(const prEquirectangular& cam)
     prCameraModel::operator=(cam);
 
     return *this;
+}
+
+// du / dX
+void prEquirectangular::computeSensorJacobian(prPointFeature & P, vpMatrix & LuX)
+{
+    double X = P.get_X(), Y = P.get_Y(), Z = P.get_Z();
+    double X2=X*X, Y2=Y*Y, Z2 = Z*Z;
+    double X2pZ2 = X2+Z2;
+     
+    if(X2pZ2 < 1e-8)
+    {
+        LuX.resize(2,3,true);
+    }
+    else
+    {
+        //get du / dx from mother class
+        vpMatrix Lux(2,2);
+        prCameraModel::computeSensorJacobian(P, Lux);
+
+        double srX2pZ2 = sqrt(X2pZ2);
+        double X2pY2pZ2 = X2pZ2+Y2;
+
+        vpMatrix LxX(2,3);
+        LxX[0][0] = Z/X2pZ2;                 LxX[0][1] = 0.;               LxX[0][2] = -X/X2pZ2;
+        LxX[1][0] = -X*Y/(srX2pZ2*X2pY2pZ2); LxX[1][1] = srX2pZ2/X2pY2pZ2; LxX[1][2] = -Y*Z/(srX2pZ2*X2pY2pZ2);
+
+        LuX = Lux*LxX;
+    }
 }

@@ -29,7 +29,7 @@
  \brief Class implementing pose estimation algorithms for spherical cameras
  */
 template<typename FSetT, typename FSetCmpT>
-class PER_EXPORT prPoseSphericalEstim : public prCameraPoseEstim {
+class PER_EXPORT prPoseSphericalEstim : public prCameraPoseEstim<FSetT, FSetCmpT> {
     
 public:
     

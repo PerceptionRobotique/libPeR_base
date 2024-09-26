@@ -25,6 +25,13 @@ void prParaboloid::project3DImage(prPointFeature & P)
     //P.set_z(fact * Z); //sur le miroir...
 }
 
+bool prParaboloid::unProject(prPointFeature & P, double & Depth)
+{
+    return false;
+    //TODO
+    //return true;
+}
+
 void prParaboloid::projectImageMiroir(prPointFeature & P, double & Xm, double & Ym, double & Zm)
 {
     double x = P.get_x(), y = P.get_y();
@@ -50,4 +57,10 @@ prParaboloid& prParaboloid::operator=(const prParaboloid& cam)
     prCameraModel::operator=(cam);
     this->h = cam.h;
     return *this;
+}
+
+// du / dX
+void prParaboloid::computeSensorJacobian(prPointFeature & P, vpMatrix & LuX)
+{
+    //TODO
 }
