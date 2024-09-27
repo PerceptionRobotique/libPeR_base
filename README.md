@@ -2,6 +2,15 @@
 
 # LibPeR: Perception library for vision-based state estimation of robots and scenes
 
+**This is the UniphorM branch of the LibPeR library.**
+
+This branch main features contain:
+
+- The Delaunay triangulation of the 3D points of the icosahedron
+- The Voronoi diagram of the 3D points of the icosahedron
+- Above mentioned spherical grid are available as `.xml` files in the `data/` directory (automatically moved at install time)
+- Up to 7 subdivisions of the icosahedron (images up to *570x285*!)
+
 ## Get started
 
 ### Installation
