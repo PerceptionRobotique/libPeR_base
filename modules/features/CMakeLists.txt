@@ -23,7 +23,7 @@
 #
 #############################################################################
 
-pr_add_module(features per_core)# OPTIONAL visp_blob visp_me)
+pr_add_module(features per_core per_acquisition_representation)# OPTIONAL visp_blob visp_me)
 pr_glob_module_sources()
 pr_module_include_directories()
 pr_create_module()

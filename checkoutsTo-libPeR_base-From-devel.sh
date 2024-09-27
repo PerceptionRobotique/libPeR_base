@@ -3,6 +3,7 @@ git checkout devel README.md
 git checkout devel config-file
 git checkout devel cmake
 git checkout devel doc
+git checkout devel data
 git checkout devel example/CMakeLists.txt
 git checkout devel example/pointPerspectiveProjection
 git checkout devel example/saveAndLoadStereocameraModelXML
@@ -14,4 +15,5 @@ git checkout devel modules/estimation
 git checkout devel modules/io
 git checkout devel modules/sensor_pose_estimation
 git checkout devel modules/features
+git checkout devel modules/acquisition_representation
 git checkout devel modules/CMakeLists.txt

@@ -95,6 +95,13 @@ configure_file(
   IMMEDIATE @ONLY
 )
 
+  # Copy the XML files of the Delaunay / Voronoi vertex to the install directory
+  file(COPY
+    ${PER_SOURCE_DIR}/data
+    DESTINATION
+    "${PER_BINARY_DIR}/"
+  )
+
 # --------------------------------------------------------------------------------------------
 #  Part 2/3: ${BIN_DIR}/unix-install/PERConfig.cmake -> For use *with* "make install"
 # -------------------------------------------------------------------------------------------
@@ -131,6 +138,14 @@ if(UNIX)
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/per"
     PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
     COMPONENT dev
+  )
+
+  # Copy the XML files of the Delaunay / Voronoi vertex to the install directory
+  # TODO: clean it and use the standard path, not hardcoded as it is now
+  install(DIRECTORY
+    ${PER_SOURCE_DIR}/data
+    DESTINATION
+    "${PER_BINARY_DIR}/"
   )
 
   # Install the export set for use with the install-tree

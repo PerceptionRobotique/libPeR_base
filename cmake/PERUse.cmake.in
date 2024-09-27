@@ -32,3 +32,4 @@ include_directories(${PER_INCLUDE_DIRS})
 # and the third party libraries we depend on
 link_libraries(${PER_LIBRARIES})
 
+add_definitions(-DPER_SI_DIR="${PER_DIR}/data/subdividedIcosahedron/")
