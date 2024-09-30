@@ -145,7 +145,7 @@ if(UNIX)
   install(DIRECTORY
     ${PER_SOURCE_DIR}/data
     DESTINATION
-    "${PER_BINARY_DIR}/"
+    "${CMAKE_INSTALL_LIBDIR}/cmake/per"
   )
 
   # Install the export set for use with the install-tree
