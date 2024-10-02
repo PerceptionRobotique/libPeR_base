@@ -20,6 +20,8 @@
 // #include <per/prRegularSphereData.h>
 #include <per/prIcosahedronSamples.h>
 
+#include <Eigen/Dense>
+
 // #include <per/prcommon.h>
 
 #include <visp/vpImage.h>
@@ -525,6 +527,45 @@ public:
     return 0;
   }
 
+  std::vector<unsigned int> get3ClosestPoints(prCartesian3DPointVec pt) {
+    std::vector<unsigned int> closestPointsVec;
+    Eigen::ArrayXXd nearPoints(0, 2);
+    double lenEdgeVec[6] = {0,
+                            0.5526923520078777,
+                            0.27634617600393885,
+                            0.13817308800196942,
+                            0.0691102948192236,
+                            0.034523305896162364};
+    double distThresh = lenEdgeVec[subdivLevels] * 1.5;
+
+    prCartesian3DPointVec *pt_XS = (prCartesian3DPointVec *)ge;
+
+    for (unsigned long ns = 0; ns < nbSamples; ns++, pt_XS++) {
+      double dist = sqrt(pow(pt.get_X() - pt_XS->get_X(), 2) +
+                         pow(pt.get_Y() - pt_XS->get_Y(), 2) +
+                         pow(pt.get_Z() - pt_XS->get_Z(), 2));
+      // double dot = pt.get_X() * pt_XS->get_X() + pt.get_Y() * pt_XS->get_Y()
+      // +
+      //              pt.get_Z() * pt_XS->get_Z();
+      // dot = (dot < -1.) ? -1. : (dot > 1.) ? 1. : dot;
+      // double dist = acos(dot);
+      if (dist < distThresh) {
+        nearPoints.conservativeResize(nearPoints.rows() + 1, 2);
+        nearPoints(nearPoints.rows() - 1, 0) = ns;
+        nearPoints(nearPoints.rows() - 1, 1) = dist;
+      }
+    }
+
+    Eigen::Index minRow, minCol;
+    double min;
+    for (int i = 0; i < 3; i++) {
+      min = nearPoints.col(1).minCoeff(&minRow, &minCol);
+      closestPointsVec.push_back(nearPoints(minRow, 0));
+      nearPoints(minRow, 1) = 1e20;
+    }
+    return closestPointsVec;
+  }
+
   /*!
    * \fn int getRawSample(unsigned long i, prCartesian3DPointVec & pXS, T & val)
    * \brief Extract the sample position and raw value at given index
@@ -650,6 +691,8 @@ public:
   using prAcquisitionModel<T>::bitmapf;
   using prAcquisitionModel<T>::isBitmapfSet;
   using prAcquisitionModel<T>::inttyp;
+
+  float *bitmapfUpdated;
 };
 
 #endif //_PRREGULARLYSAMPLEDCSIMAGE_H
