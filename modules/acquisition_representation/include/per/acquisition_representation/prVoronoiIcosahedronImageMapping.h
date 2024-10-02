@@ -546,7 +546,10 @@ public:
 
     vpHomogeneousMatrix dMc;
     dMc.buildFrom(r);
-    dMc = dMc.inverse(); // a justifier clairement dans la doc
+    // contrary to prRegularlySampledCSImage we don't do the below because we always feed the same Voronoi 
+    // diagram in the image space for efficiency purpose (otherwise, we would need to recompute the mapping 
+    // of all the cells and it would not ease the visualization anyway)
+    // dMc = dMc.inverse(); 
     Eigen::Vector3d vecAB, vecAC, vecBC, vecAP, vecBP, vecCP;
     double x_a, y_a, z_a, x_b, y_b, z_b, x_c, y_c, z_c, x_p, y_p, z_p;
     double areaAPC, areaAPB, areaBPC, areaTot;
@@ -696,7 +699,10 @@ public:
 
     vpHomogeneousMatrix dMc;
     dMc.buildFrom(r);
-    dMc = dMc.inverse(); // a justifier clairement dans la doc
+    // contrary to prRegularlySampledCSImage we don't do the below because we always feed the same Voronoi 
+    // diagram in the image space for efficiency purpose (otherwise, we would need to recompute the mapping 
+    // of all the cells and it would not ease the visualization anyway)
+    // dMc = dMc.inverse(); 
     Eigen::Vector3d vecAB, vecAC, vecBC, vecAP, vecBP, vecCP;
     double x_a, y_a, z_a, x_b, y_b, z_b, x_c, y_c, z_c, x_p, y_p, z_p;
     double areaAPC, areaAPB, areaBPC, areaTot;
