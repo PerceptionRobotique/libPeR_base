@@ -28,7 +28,8 @@ typedef enum
     Equirectangular, /*!< Equirectangular spherical camera projection */
     Ortho, /*!< Orthographic camera projection */
     FisheyeEquidistant, /*!< Fisheye equidistant camera projection */
-    PolyCart /*!< Polynomial Cartesian camera projection */
+    PolyCart, /*!< Polynomial Cartesian camera projection */
+    FisheyeEquisolid, /*!< Fisheye equisolid camera projection */
 } CameraModelType;
 
 

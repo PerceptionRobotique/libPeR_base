@@ -71,12 +71,12 @@ int main()
     double residual = prCameraModelConvert::convert_distortions(&inperspcam, &outperspcam, FoV, &abs_err);
     vpMatrix::save("residuals.txt", abs_err); 
     //e.g. to plot the residuals with gnuplot: 
-    //plot 'residuals.txt' using (57.295779513*$1):2 skip 2 with boxes fill solid 0.5 title "algebraic error per ray", [-100:100] 0.1 lc rgb "#00FF00" lw 2 title "0.1 algebraic error"
-    //set key center top reverse Left
-    //set key box
-    //set xlabel "{/Symbol f} elevation angle [deg]"
-    //set ylabel "approximation error [pix]"
-    //replot
+    // plot 'residuals.txt' using (57.295779513*$1):2 skip 2 with boxes fill solid 0.5 title "algebraic error per ray", [-100:100] 0.1 lc rgb "#00FF00" lw 2 title "0.1 algebraic error"
+    // set key center top reverse Left
+    // set key box
+    // set xlabel "{/Symbol f} elevation angle [deg]"
+    // set ylabel "approximation error [pix]"
+    // replot
     
     std::cout << "The ouput camera is a " << outperspcam.getName() << " camera of intrinsic parameters " << std::endl;
     outperspcam.operator<<(std::cout);
