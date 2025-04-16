@@ -10,6 +10,8 @@ git checkout devel example/saveAndLoadStereocameraModelXML
 git checkout devel example/FisheyeEquidistant2OmniCameraModelConversion
 git checkout devel example/Omni2PolyCartCameraModelConversion
 git checkout devel example/RationalPolynomial2PlumbBoCameraModelConversion
+git checkout devel example/CartesianPolynomial2FisheyeOpenCV
+git checkout devel example/RationalPolynomial2FisheyeOpenCV
 git checkout devel modules/core
 git checkout devel modules/estimation
 git checkout devel modules/io

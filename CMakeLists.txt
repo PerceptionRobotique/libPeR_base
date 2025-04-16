@@ -41,7 +41,7 @@ pr_clear_vars(PERModules_TARGETS)
 #-----------------------------------------------------------------------------
 # PER version number.  An even minor number corresponds to releases.
 set(PER_VERSION_MAJOR "0")
-set(PER_VERSION_MINOR "5")
+set(PER_VERSION_MINOR "6")
 set(PER_VERSION_PATCH "0")
 set(PER_VERSION "${PER_VERSION_MAJOR}.${PER_VERSION_MINOR}.${PER_VERSION_PATCH}")
 set(PROJECT_FULL_VERSION ${PER_VERSION})
@@ -169,6 +169,7 @@ if(WIN32)
     PR_OPTION(USE_XML2        XML2        ""    "Include xml support"          "" ON)
     PR_OPTION(USE_ICONV ICONV "" "Include iconv support" "" ON)
 endif()
+set(OpenCV_DIR "/usr/lib/x86_64-linux-gnu/cmake/opencv4")
 PR_OPTION(USE_OPENCV      OpenCV      QUIET "Include OpenCV support" "OpenCV_DIR;OpenCV_FOUND;OPENCV_FOUND" ON)
 # To control Pioneer mobile robots, under UNIX we need Aria, pthread, rt and dl 3rd party libraries
 #PR_OPTION(USE_ARIA        ARIA         ""    "Include aria support"         "" ON)
