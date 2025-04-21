@@ -141,20 +141,18 @@ set(PER_INCLUDE_DIRS "@PER_INCLUDE_DIRS_CONFIGCMAKE@")
 # Tells the user project PER library name
 set(PER_LIBRARIES ${PER_LIBS})
 
-# need to be improved
-if(POLICY CMP0024)
-  # Fix to prevent multiple includes
-  if(NOT TARGET per_core)
-    cmake_policy(PUSH)
-    cmake_policy(SET CMP0024 OLD)
-    # Our library dependencies (contains definitions for IMPORTED targets)
-    include("${CMAKE_CURRENT_LIST_DIR}/PERModules.cmake")
-    cmake_policy(POP)
-  endif()
-else()
-  # Fix for cmake 2.8.7 to prevent multiple includes
-  if(NOT TARGET per_core)
-    # Our library dependencies (contains definitions for IMPORTED targets)
+if(NOT TARGET per_core)
+  if(${CMAKE_VERSION} VERSION_LESS "4.0")
+    if(POLICY CMP0024)
+      cmake_policy(PUSH)
+      cmake_policy(SET CMP0024 NEW)
+      include("${CMAKE_CURRENT_LIST_DIR}/PERModules.cmake")
+      cmake_policy(POP)
+    else()
+      include("${CMAKE_CURRENT_LIST_DIR}/PERModules.cmake")
+    endif()
+  else()
+    # CMake 4.0+ - CMP0024 is always NEW, no need to set or push
     include("${CMAKE_CURRENT_LIST_DIR}/PERModules.cmake")
   endif()
 endif()
