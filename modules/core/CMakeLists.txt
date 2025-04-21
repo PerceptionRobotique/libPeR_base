@@ -84,11 +84,6 @@ if(USE_OPENCV)
     # ReleaseWithDebugInfo was requested to detect libopencv-devel under Fedora 20
     # RelWithDebugInfo was requested to detect ros-hydro-opencv2 2.4.9 under Ubuntu 12.04 LTS with ROS hydro
     set(config_ "NONE" "RELEASE" "DEBUG" "RELEASEWITHDEBINFO" "RELWITHDEBINFO")
-    if(POLICY CMP0045)
-      # Fix Error on non-existent target in get_target_property for 3rd party location extraction
-      cmake_policy(PUSH)
-      cmake_policy(SET CMP0045 OLD)
-    endif()
 
     foreach(component_ ${OpenCV_LIB_COMPONENTS})
       foreach(imp_config_ ${config_})
@@ -152,10 +147,6 @@ if(USE_OPENCV)
       endforeach()
     endforeach()
 
-    if(POLICY CMP0045)
-      # Fix Error on non-existent target in get_target_property for 3rd party location extraction
-      cmake_policy(POP)
-    endif()
     list(APPEND opt_libs "${OpenCV_LIBS}")
   else()
     # this should be an old OpenCV version that doesn't have the previous behavior
