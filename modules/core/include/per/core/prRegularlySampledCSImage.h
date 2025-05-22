@@ -6,6 +6,11 @@
  \date april 2017
  */
 
+#include "per/core/prcommon.h"
+#include <cstdlib>
+#include <per/core/prCartesian3DPointVec.h>
+#include <vector>
+
 #if !defined(_PRREGULARLYSAMPLEDCSIMAGE_H)
 #define _PRREGULARLYSAMPLEDCSIMAGE_H
 
@@ -80,17 +85,18 @@ public:
         prCartesian3DPointVec *pt_XS = (prCartesian3DPointVec *)ge;
         const prCartesian3DPointVec *pt_XS_src = prData::samplesCoordinates[subdivLevels];
         float inorme = 1.0f;
+
         for(unsigned long i = 0 ; i < nbSamples ; i++, pt_XS++, pt_XS_src++)
         {
             //renormalize coordinates (might be necessary due to the text exportation
             inorme = 1.0f/sqrt(pt_XS_src->get_X()*pt_XS_src->get_X() + pt_XS_src->get_Y()*pt_XS_src->get_Y() + pt_XS_src->get_Z()*pt_XS_src->get_Z());
             pt_XS->set(pt_XS_src->get_X()*inorme, pt_XS_src->get_Y()*inorme, pt_XS_src->get_Z()*inorme, pt_XS_src->get_W());
         }
-    
+
         return 0;
     }
-    
-    
+
+        
     /*!
      * \fn int buildFromTwinOmni(vpImage<T> & I, prStereoModel & stereoCam, vpImage<unsigned char> *Mask = NULL)
      * \brief Builds the pixels map of the spherical image from the acquired dual omni image data
@@ -318,8 +324,11 @@ public:
     int buildFromEquiRect(vpImage<T> & I, prEquirectangular & equiCam, vpImage<unsigned char> *Mask = NULL)
     {
         I_req = I;
-        MaskS.resize(Mask->getHeight(), Mask->getWidth());
-        std::memcpy(MaskS.bitmap, Mask->bitmap, Mask->getHeight() * Mask->getWidth() * sizeof(unsigned char));
+
+        if(Mask != nullptr){
+            MaskS.resize(Mask->getHeight(), Mask->getWidth());
+            std::memcpy(MaskS.bitmap, Mask->bitmap, Mask->getHeight() * Mask->getWidth() * sizeof(unsigned char));
+        }
 
         if(nbSamples == 0)
             return -1;
@@ -338,11 +347,11 @@ public:
         T *pt_bitmap = bitmap;
         float *pt_bitmapf = bitmapf;
 
-        prCartesian3DPointVec XSs;
         prCartesian3DPointVec *pt_XS = (prCartesian3DPointVec *)ge;
-        unsigned int icam = 0, imWidth = I.getWidth(), imHeight = I.getHeight(), i, j;
+        unsigned int imWidth = I.getWidth(), imHeight = I.getHeight(), i, j;
         prPointFeature P;
         double u, v, du, dv, unmdu, unmdv;
+
 
         for(unsigned long ns = 0 ; ns < nbSamples ; ns++, pt_XS++, pt_bitmap++)
         {
@@ -426,8 +435,9 @@ public:
                         break;
                 }
             }
-            if(inttyp == IMAGEPLANE_BILINEAR)
+            if(inttyp == IMAGEPLANE_BILINEAR){
                 pt_bitmapf++;
+            }                
         }
         
         return 0;
@@ -491,6 +501,56 @@ public:
             }
         }
         
+        return 0;
+    }
+
+    int toEquiRectF(vpImage<T> &I_r, vpPoseVector &r, prEquirectangular &equiCam, vpImage<unsigned char> *Mask = NULL)
+    {
+        if (nbSamples == 0)
+            return -1;
+
+        T *pt_bitmap = bitmap;
+        float *pt_bitmapf = bitmapf;
+
+        prCartesian3DPointVec XSs;
+        prCartesian3DPointVec *pt_XS = (prCartesian3DPointVec *)ge;
+        unsigned int icam = 0, imWidth = I_r.getWidth(), imHeight = I_r.getHeight(), i, j;
+        prPointFeature P;
+        double u, v, du, dv, unmdu, unmdv;
+
+        vpHomogeneousMatrix dMc;
+        dMc.buildFrom(r);
+        dMc = dMc.inverse(); // a justifier clairement dans la doc
+
+        for (unsigned long ns = 0; ns < nbSamples; ns++, pt_XS++, pt_bitmapf++)
+        {
+            P.sX = *pt_XS;
+            P.sX = P.sX.changeFrame(dMc);
+
+            equiCam.project3DImage(P);
+
+            equiCam.meterPixelConversion(P);
+
+            u = P.get_u();
+            v = P.get_v();
+
+            if ((u >= 0) && (v >= 0) && (u < (imWidth - 1)) && (v < (imHeight - 1)))
+            {
+                i = (unsigned int)v;
+                j = (unsigned int)u;
+
+                if ((Mask != NULL))
+                {
+                    if ((*Mask)[i][j] != 0)
+                        I_r[i][j] = *pt_bitmapf;
+                }
+                else
+                {
+                    I_r[i][j] = *pt_bitmapf;
+                }
+            }
+        }
+
         return 0;
     }
 
